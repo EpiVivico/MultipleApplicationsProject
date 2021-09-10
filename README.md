@@ -1,1 +1,1 @@
-# MutlipleApplicationsProject
+# MultipleApplicationsProject
