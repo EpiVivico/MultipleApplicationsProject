@@ -1,12 +1,17 @@
+import anagramFinder as af
 import tkinter as tk
+import tkinter.scrolledtext
 from tkinter import ttk
 
 
 class MyInterface(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
-        self.frame = tk.Frame(self.master, width=400, height=300, relief='raised')
-        self.frame.pack()
+        self.Afinder = af.AnagramFinder()
+
+        # -------       Desktop Application SetUP       -------
+        self.frame = tk.Frame(self.master, width=400, height=100, relief='raised')
+        self.frame.pack(fill=None, expand=False)
         self.master = master  # root
         self.pack()
         self.create_widgets()
@@ -17,7 +22,8 @@ class MyInterface(tk.Frame):
 
         self.setWindow()
         self.createInputButton()
-        # self.createAnagramButton()
+        self.createAnagramButton()
+        self.createTextZone()
 
         # -----             Making Display Zone         -------
 
@@ -47,24 +53,24 @@ class MyInterface(tk.Frame):
             # textZoneEntry.grid(row=1, sticky='ew')
             # textZoneScrollbar.grid(row=2, sticky='ew')
 
-    '''def setWindow(self):
-        # -------           Set Canva and Window        -------
-        self.canvas = tk.Canvas(self.master, width=400, height=300, relief='raised')
-        self.canvas.pack()
-        label = tk.Label(self.master, font=('helvetica', 15, 'bold'), text="Enter a word to be checked:")
-        self.canvas.create_window(200, 100, window=label)'''
+    def createTextZone(self):
+        # ------           Show Text Zone             -------
+        '''self.textZone = tk.Text(self.frame, height=5, width=40)
+        self.scrollBar = tk.Scrollbar(self.frame, command=self.textZone.yview())
+        self.textZone["yscrollcommand"] = self.scrollBar.set'''
+        self.textConsole = tkinter.scrolledtext.ScrolledText(self, width=40, height=10, font=('helvetica', 12))
+        self.textConsole.pack(expand=True, fill='both', pady=10)
+        self.textConsole.configure(state=tk.DISABLED)
 
     def setWindow(self):
         # -------           Set Frame and Window        -------
         label = tk.Label(self.frame, font=('helvetica', 15, 'bold'), text="Enter a word to be checked:")
         label.place(relx=0.5, rely=0.13, anchor='center')
-        # label.pack()
 
     def createInputButton(self):
         # -------          User Input Button            -------
         self.entry = tk.Entry(self.frame)
-        self.entry.place(relx=0.5, rely=0.2, anchor='center')
-        # self.entry.pack()
+        self.entry.place(relx=0.5, rely=0.4, anchor='center')
 
         # Create the application variable.
         self.contents = tk.StringVar()
@@ -80,9 +86,9 @@ class MyInterface(tk.Frame):
 
     def createAnagramButton(self):
         # -------           Primary Button              -------
-        self.anagramButton = tk.Button(text="Search for anagrams", fg="white", bg="dark green",
+        self.anagramButton = tk.Button(self.frame, text="Search for anagrams", fg="white", bg="dark green",
                                        font=('helvetica', 10, 'bold'), command=self.checkAnagramCallback)  # raw init
-        self.canvas.create_window(200, 170, window=self.anagramButton)
+        self.anagramButton.place(relx=0.5, rely=0.7, anchor='center')
 
     def createQuitButton(self):
         # -------             Quit Button                -------
@@ -92,10 +98,21 @@ class MyInterface(tk.Frame):
 
     def checkAnagramCallback(self):
         # call anagram checker (back end)
-        print("Checking for anagrams: " + self.contents.get())
-        # self.displayAnagrams(self.contents.get()) self.displayAnagrams("OK this is the test to get anagrams as a
-        # very long long long string in order to test the scrollbar and the textzone...", 1)
+        print("Checking for anagrams of: " + self.contents.get())
+        self.Afinder.searchAnagram(self.contents.get())
+        listOfAnagrams = self.Afinder.finalResults
+
+        toWrite = ""
+        for word in listOfAnagrams:
+            toWrite += word + '\n'
+
+        self.writeInTextZone(toWrite)
         self.contents.set("")
+
+    def writeInTextZone(self, toWrite):
+        self.textConsole.configure(state=tk.NORMAL)
+        self.textConsole.insert('0.0', toWrite)
+        self.textConsole.configure(state=tk.DISABLED)
 
     def print_contents(self, event):
         # event gives you the pressed key and mouse positioning

@@ -35,13 +35,14 @@ class AnagramFinder:
                                    str(len(self.wordList)) + " elements in the lexical DataBase\n" \
                                    + "Enter a word: ")).lower()
         print(self.toPermute)
+        return self.toPermute
 
     # This is the function making everythig so slow
     # Doesn't need to find permutations
     # Just need to compare length and letters together)
-    def searchAnagram(self):
+    def searchAnagram(self, toPermute):
         self.allPermutations = \
-            find_permutations(self.toPermute, 0, self.allPermutations)
+            find_permutations(toPermute, 0, self.allPermutations)
 
         for permutation in self.allPermutations:
             if permutation in self.wordList:
@@ -51,7 +52,6 @@ class AnagramFinder:
 # prevents from running scripts while importing stuff
 if __name__ == "__main__":
     Afinder = AnagramFinder()
-    Afinder.askWord()
-    Afinder.searchAnagram()
+    Afinder.searchAnagram(Afinder.askWord())
 
     print(Afinder.finalResults)
