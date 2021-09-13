@@ -21,7 +21,7 @@ def mySwap(wordRef, i, j):
 def concat_list(word):
     str_result = ""
     for c in word:
-        str_result += c;
+        str_result += c
     return str_result
 
 

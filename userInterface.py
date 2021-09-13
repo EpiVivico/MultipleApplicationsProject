@@ -1,7 +1,7 @@
 import anagramFinder as af
+import permutations as permute
 import tkinter as tk
 import tkinter.scrolledtext
-from tkinter import ttk
 
 
 class MyInterface(tk.Frame):
@@ -10,9 +10,16 @@ class MyInterface(tk.Frame):
         self.Afinder = af.AnagramFinder()
 
         # -------       Desktop Application SetUP       -------
-        self.frame = tk.Frame(self.master, width=400, height=100, relief='raised')
+        self.frame = tk.Frame(self.master, width=400, height=150, relief='raised')
         self.frame.pack(fill=None, expand=False)
+
+        # ------        Init of the None                --------
         self.master = master  # root
+        self.anagramButton = None
+        self.textConsole = None
+        self.entry = None
+        self.contents = None
+        self.quit = None
         self.pack()
         self.create_widgets()
 
@@ -23,41 +30,12 @@ class MyInterface(tk.Frame):
         self.setWindow()
         self.createInputButton()
         self.createAnagramButton()
+        self.createPermutationButton()
         self.createTextZone()
-
-        # -----             Making Display Zone         -------
-
-        # self.displayAnagrams("", 0)
-        '''self.textZone = tk.StringVar(value="O\t\t\t\tO")
-        self.frame = ttk.Frame(self.master) # root
-        self.textZoneEntry = ttk.Entry(self.frame, textvariable=self.textZone, state="readonly")
-        self.textZoneScrollbar = ttk.Scrollbar(self.frame, orient="vertical", command=self.textZoneEntry.xview)
-        self.textZoneEntry.config(xscrollcommand=self.textZoneScrollbar.set)
-
-        self.canvas.create_window(window=self.frame)
-        '''
-        # self.createQuitButton()
-
-    def displayAnagrams(self, anagrams, initCode):
-        # ------           Show Text Zone             -------
-        self.textZone = tk.StringVar(value=anagrams)
-        frame = ttk.Frame(self.master)  # root
-        textZoneEntry = ttk.Entry(frame, textvariable=self.textZone, state="readonly")
-        textZoneScrollbar = ttk.Scrollbar(frame, orient="vertical", command=textZoneEntry.xview)
-        textZoneEntry.config(xscrollcommand=textZoneScrollbar.set)
-        # textZoneEntry.grid(row=1, )
-
-        if initCode == 0:
-            # frame.pack()
-            self.canvas.create_window(200, 190, window=frame)
-            # textZoneEntry.grid(row=1, sticky='ew')
-            # textZoneScrollbar.grid(row=2, sticky='ew')
+        self.createQuitButton()
 
     def createTextZone(self):
         # ------           Show Text Zone             -------
-        '''self.textZone = tk.Text(self.frame, height=5, width=40)
-        self.scrollBar = tk.Scrollbar(self.frame, command=self.textZone.yview())
-        self.textZone["yscrollcommand"] = self.scrollBar.set'''
         self.textConsole = tkinter.scrolledtext.ScrolledText(self, width=40, height=10, font=('helvetica', 12))
         self.textConsole.pack(expand=True, fill='both', pady=10)
         self.textConsole.configure(state=tk.DISABLED)
@@ -88,13 +66,33 @@ class MyInterface(tk.Frame):
         # -------           Primary Button              -------
         self.anagramButton = tk.Button(self.frame, text="Search for anagrams", fg="white", bg="dark green",
                                        font=('helvetica', 10, 'bold'), command=self.checkAnagramCallback)  # raw init
-        self.anagramButton.place(relx=0.5, rely=0.7, anchor='center')
+        self.anagramButton.place(relx=0.5, rely=0.6, anchor='center')
+
+    def createPermutationButton(self):
+        # -------           Primary Button              -------
+        self.anagramButton = tk.Button(self.frame, text="List all permutations", fg="white", bg="brown",
+                                       font=('helvetica', 10, 'bold'), command=self.findPermutations)  # raw init
+        self.anagramButton.place(relx=0.5, rely=0.8, anchor='center')
+
+    # Crash at 9 letters
+    def findPermutations(self):
+        self.textConsole.configure(state=tk.NORMAL)
+
+        permutations = []
+        permutations = permute.find_permutations(self.contents.get(), 0, permutations)
+
+        strPermutations = ""
+        for word in permutations:
+            strPermutations += word + '\n'
+
+        self.textConsole.insert('0.0', strPermutations)
+        self.textConsole.configure(state=tk.DISABLED)
 
     def createQuitButton(self):
         # -------             Quit Button                -------
-        self.quit = tk.Button(text="QUIT", fg="black", bg="red", font=('helvetica', 10, 'bold'),
+        self.quit = tk.Button(self, text="QUIT", fg="black", bg="red", font=('helvetica', 10, 'bold'),
                               command=self.master.destroy)
-        self.canvas.create_window(375, 285, window=self.quit)
+        self.quit.pack(side=tk.RIGHT, pady=5)
 
     def checkAnagramCallback(self):
         # call anagram checker (back end)
@@ -117,6 +115,7 @@ class MyInterface(tk.Frame):
     def print_contents(self, event):
         # event gives you the pressed key and mouse positioning
         print("Hi, You typed:", self.contents.get())
+        print(event)
         self.contents.set("")
 
 
